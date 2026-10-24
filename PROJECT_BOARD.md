@@ -132,13 +132,13 @@ Known problems, for the repo's documentation (not the paper):
 
 ## Task 7: Update allendowney.com/research/changepoint
 
-**Status:** Pending
+**Status:** DONE 2026-10-24
 
 **Context:** The page described the work as current, linked the 2008 PDF and slides, and said "Software: Coming soon". Its source is in `~/AllenDowneyCom`, which is deploy-only: commit there, then deploy.
 
 - [x] Add a notice at the top: superseded by BOCPD, with links to the repo and arXiv. Source is `~/AllenDowneyCom/allendowney/research/changepoint/index.html`; the change went into that repo's commit `354c039`, made by a concurrent session
 - [x] Replace "Coming soon" with the repo link
-- [ ] Deploy: `scripts/deploy_ad.sh research/changepoint/index.html` in `~/AllenDowneyCom` (dry run checked: only that file changes). Allen is handling the deploy (2026-10-24)
+- [x] Deployed 2026-10-24 (`scripts/deploy_ad.sh research/changepoint/index.html` in `~/AllenDowneyCom`); live page checked
 
 ---
 
