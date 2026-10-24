@@ -96,11 +96,11 @@ Repo name: `ChangePoint`.
 
 ## Task 5: Create the GitHub repo and push
 
-**Status:** In progress — public at https://github.com/AllenDowney/ChangePoint since 2026-10-24 (Allen approved)
+**Status:** DONE 2026-10-24 — public at https://github.com/AllenDowney/ChangePoint (Allen approved)
 
 - [x] Create `AllenDowney/ChangePoint`; set the description and topics (changepoint, bayesian, bocpd, time-series)
 - [x] Push; GitHub detects the MIT license, and the README figure is served
-- [ ] Allen checks in a browser that the math renders in `paper/paper.md` and `summary.md` (GitHub renders it client-side, so it can't be checked from the API)
+- [x] Allen checked in a browser that the math renders in `paper/paper.md` and `summary.md` (GitHub renders it client-side, so it can't be checked from the API)
 
 ---
 
@@ -112,10 +112,11 @@ Repo name: `ChangePoint`.
 
 **Context:** v1 stays available, but readers usually land on the latest version.
 
-- [ ] Comments field and the first line of the abstract: superseded; see Adams & MacKay (2007) and Fearnhead (2006); code at the repo URL
-- [ ] The same notice at the top of the paper; the body is otherwise unchanged
+- [x] Comments field and the first line of the abstract: superseded; see Adams & MacKay (2007) and Fearnhead (2006); code at the repo URL. Text in `paper/arxiv/v2_submission.md` (abstract 1,289 of 1,920 characters)
+- [x] The same notice at the top of the paper (`paper/arxiv/paper.tex`); the body is otherwise unchanged
 - [x] Keep the title "A novel changepoint detection algorithm" (Allen, 2026-10-24)
-- [ ] Build, check the PDF, submit the replacement
+- [x] Build and check the PDF: builds clean with `latex`, 12 pages
+- [ ] Allen submits the replacement on arXiv
 
 Known problems, for the repo's documentation (not the paper):
 1. **The novelty claims are wrong.** "There are no previous algorithms for computing P(i⁺)" and the conclusion's "novel contribution" are incorrect. The BOCPD run-length posterior is exactly P(i⁺) (Adams & MacKay 2007), and exact recursions appear in Fearnhead (2006).
@@ -132,10 +133,11 @@ Known problems, for the repo's documentation (not the paper):
 
 **Status:** Pending
 
-**Context:** The page still describes the work as current, links the 2008 PDF and slides, and says "Software: Coming soon". Its source isn't in `~/AllenDowney.github.io`; find where it lives.
+**Context:** The page described the work as current, linked the 2008 PDF and slides, and said "Software: Coming soon". Its source is in `~/AllenDowneyCom`, which is deploy-only: commit there, then deploy.
 
-- [ ] Add a notice at the top: superseded by BOCPD, with links to the repo and arXiv v2
-- [ ] Replace "Coming soon" with the repo link
+- [x] Add a notice at the top: superseded by BOCPD, with links to the repo and arXiv. Source is `~/AllenDowneyCom/allendowney/research/changepoint/index.html`; the change went into that repo's commit `354c039`, made by a concurrent session
+- [x] Replace "Coming soon" with the repo link
+- [ ] Deploy: `scripts/deploy_ad.sh research/changepoint/index.html` in `~/AllenDowneyCom` (dry run checked: only that file changes)
 
 ---
 

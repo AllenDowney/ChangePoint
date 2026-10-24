@@ -36,6 +36,20 @@
 
 \begin{abstract}
 
+\textbf{Note added in version 2 (2026): this paper has been superseded.}
+The probability it computes, that each index is the most recent
+changepoint, is the run-length posterior of Bayesian online
+changepoint detection (R.~P. Adams and D.~J.~C. MacKay,
+arXiv:0710.3742, 2007), which computes it exactly and efficiently;
+see also P.~Fearnhead, \emph{Statistics and Computing} 16:203--213,
+2006.  The implementation used for the results in this paper
+contained errors, so those results should not be relied on.  A
+corrected implementation, tests, and a description of the errors are
+at \url{https://github.com/AllenDowney/ChangePoint}.  The rest of the
+paper is unchanged from version 1.
+
+\medskip
+
 We propose an algorithm for simultaneously detecting and locating
 changepoints in a time series, and a framework for predicting the
 distribution of the next point in the series.  The kernel of the
