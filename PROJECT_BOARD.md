@@ -53,7 +53,7 @@ Repo name: `ChangePoint`.
 
 ## Task 2: Prepare the repo locally
 
-**Status:** In progress — everything done except the first commit, which waits for Allen's review
+**Status:** DONE 2026-10-24 (first commit `8f5a2ef`; branch renamed to `main`)
 
 **Context:** The folder isn't under git yet. Several things must stay out of the public repo:
 - **Copyrighted papers:** all of `papers/` (journal PDFs and the Basseville & Nikiforov book) and `code/simulation.pdf` (Perros's textbook).
@@ -65,7 +65,7 @@ Repo name: `ChangePoint`.
 - [x] `paper/sigmetrics/` was a submission only, never published, so it can be included (Allen, 2026-10-24)
 - [x] Include everything else: the original code, `notes.txt`, and the paper sources and PDFs, minus build files and generated data (Allen, 2026-10-24)
 - [x] `git init` (no commits yet)
-- [ ] Allen reviews `git status` and the new README, summary, and REFERENCES; then the first commit
+- [x] Allen reviewed and revised the README, summary, and REFERENCES; first commit `8f5a2ef`
 
 ---
 
@@ -96,10 +96,11 @@ Repo name: `ChangePoint`.
 
 ## Task 5: Create the GitHub repo and push
 
-**Status:** Pending — needs Allen's approval (public and hard to undo)
+**Status:** In progress — public at https://github.com/AllenDowney/ChangePoint since 2026-10-24 (Allen approved)
 
-- [ ] Create `AllenDowney/ChangePoint`; set the description and topics (changepoint, bayesian, bocpd)
-- [ ] Push; check that the README renders, including the math in `paper/paper.md` and `summary.md`
+- [x] Create `AllenDowney/ChangePoint`; set the description and topics (changepoint, bayesian, bocpd, time-series)
+- [x] Push; GitHub detects the MIT license, and the README figure is served
+- [ ] Allen checks in a browser that the math renders in `paper/paper.md` and `summary.md` (GitHub renders it client-side, so it can't be checked from the API)
 
 ---
 
