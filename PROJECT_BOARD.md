@@ -138,7 +138,7 @@ Known problems, for the repo's documentation (not the paper):
 
 - [x] Add a notice at the top: superseded by BOCPD, with links to the repo and arXiv. Source is `~/AllenDowneyCom/allendowney/research/changepoint/index.html`; the change went into that repo's commit `354c039`, made by a concurrent session
 - [x] Replace "Coming soon" with the repo link
-- [ ] Deploy: `scripts/deploy_ad.sh research/changepoint/index.html` in `~/AllenDowneyCom` (dry run checked: only that file changes)
+- [ ] Deploy: `scripts/deploy_ad.sh research/changepoint/index.html` in `~/AllenDowneyCom` (dry run checked: only that file changes). Allen is handling the deploy (2026-10-24)
 
 ---
 

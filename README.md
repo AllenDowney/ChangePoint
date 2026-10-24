@@ -69,7 +69,7 @@ The code is under the [MIT License](LICENSE). The text, figures, and results are
 | `downey0[68]changepoint.slides.pdf`, `slides.tex` | Talk slides |
 | `downey0[68]changepoint.bib`, `paper.bib` | Bibliography |
 | `figures/` | PNG versions of the paper's figures, converted from the EPS files |
-| `arxiv/` | The arXiv submission: same text as `paper.tex` with local figure paths |
+| `arxiv/` | The arXiv submission, version 2 (2026): `paper.tex` is the 2008 text with local figure paths and a superseded notice added to the abstract; `paper.pdf` is the built v2; `v2_notice.txt` and `v2_submission.md` hold the text for arXiv's abstract and comments fields |
 | `sdsc/` | Slides from the 2006 talk at SDSC |
 | `sigmetrics/` | Version submitted to SIGMETRICS (not published) |
 | `talk/` | Talk abstracts |
