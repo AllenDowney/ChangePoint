@@ -33,3 +33,4 @@ paper/*.ps.gz
 paper/paper.pdf
 paper/slides.pdf
 paper/arxiv.zip
+paper/arxiv/*.zip

@@ -106,7 +106,7 @@ Repo name: `ChangePoint`.
 
 ## Task 6: Post arXiv v2 of 0812.1237
 
-**Status:** Pending — Allen submits
+**Status:** In progress — submitted 2026-10-24; waiting for arXiv to announce v2
 
 **Decided (Allen, 2026-10-24):** no effort on fixing the paper. v2 only acknowledges that it has been superseded and points to BOCPD and the repo. The known problems are documented in the repo, not in the paper.
 
@@ -116,7 +116,8 @@ Repo name: `ChangePoint`.
 - [x] The same notice at the top of the paper (`paper/arxiv/paper.tex`); the body is otherwise unchanged
 - [x] Keep the title "A novel changepoint detection algorithm" (Allen, 2026-10-24)
 - [x] Build and check the PDF: builds clean with `latex`, 12 pages
-- [ ] Allen submits the replacement on arXiv
+- [x] Allen submitted the replacement on arXiv (2026-10-24), using `paper/arxiv/downey-changepoint-arxiv-v2.zip` and the text in `v2_notice.txt` / `v2_submission.md`
+- [ ] Check that v2 is announced at https://arxiv.org/abs/0812.1237 and that the notice shows on the abstract page and in the PDF
 
 Known problems, for the repo's documentation (not the paper):
 1. **The novelty claims are wrong.** "There are no previous algorithms for computing P(i⁺)" and the conclusion's "novel contribution" are incorrect. The BOCPD run-length posterior is exactly P(i⁺) (Adams & MacKay 2007), and exact recursions appear in Fearnhead (2006).
