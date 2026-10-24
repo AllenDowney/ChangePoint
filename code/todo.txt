@@ -1,0 +1,20 @@
+Experiments
+
+1) run fudge=0.5
+
+python Change4.py --alg=ipp -m -s --runs=1000 > result.ipp21
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp21 > mat_vs_far.ipp21
+xgraph mat_vs_far.glr1 mat_vs_far.ipp21 mat_vs_far.ipp22 
+
+2) Nile data
+
+   regression test to move like0 up a paragraph
+
+   resume nile data display
+
+
+3) detecting change in variance
+
+4) fix the startup weirdness?
+
+

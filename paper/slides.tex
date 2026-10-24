@@ -1,0 +1,772 @@
+\documentclass[pdf,letterpaper,allen]{prosper}
+\usepackage{graphicx,url}
+
+\renewcommand{\P}{\ P}
+%\newcommand{\jc}{\makebox[0.4pt][l]{0}1}
+\newcommand{\jc}{\oslash}
+\newcommand{\cb}{\cornerblue}
+
+\title{Changepoint detection \\for time series prediction}
+\author{Allen B. Downey}
+\institution{Olin College of Engineering}
+
+\begin{document}
+\maketitle
+
+\begin{slide}{}
+
+My background:
+
+\begin{itemize}
+
+\item Predoc at San Diego Supercomputer Center.
+
+\item Dissertation on workload modeling, queue time prediction
+  and malleable job allocation for parallel machines.
+
+\item Recent: Network measurement and modeling.
+
+\item Current: History-based prediction.
+
+\end{itemize}
+\end{slide}
+
+
+
+\begin{slide}{}
+
+Connection?
+
+\begin{itemize}
+
+\item Resource allocation based on {\blue prediction}.
+
+\item Prediction based on {\blue history}.
+
+\item Historical data characterized by {\blue changepoints} (nonstationarity).
+
+\end{itemize}
+\end{slide}
+
+
+
+\begin{slide}{}
+
+Three ways to characterize variability:
+
+\begin{itemize}
+
+\item Noise around a stationary level.
+
+\item Noise around an underlying trend.
+
+\item Abrupt changes in level: {\red changepoints}.
+
+\end{itemize}
+
+Important difference:
+
+\begin{itemize}
+
+\item Data prior to a changepoint is irrelevant to
+performance after.
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+Example: wide area networks
+
+\begin{itemize}
+
+\item Some trends (accumulating queue). 
+
+\item Many abrupt changepoints.
+
+\begin{itemize}
+
+\item Beginning and end of transfers.
+
+\item Routing changes.
+
+\item Hardware failure, replacement.
+
+\end{itemize}
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+Example: parallel batch queues
+
+\begin{itemize}
+
+\item Some trends (daily cycles). 
+
+\item Some abrupt changepoints.
+
+\begin{itemize}
+
+\item Start/completion of wide jobs.
+
+\item Queue policy changes.
+
+\item Hardware failure, replacement.
+
+\end{itemize}
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+My claim: 
+
+\begin{itemize}
+
+\item Many systems are characterized by changepoints
+where data before a changepoint is irrelevant to
+performance after.
+
+\item In these systems, good predictions depend on
+changepoint detection, because {\red old data is wrong}.
+
+\end{itemize}
+
+Discussion?
+
+\end{slide}
+
+
+\begin{slide}{}
+
+Two kinds of prediction:
+
+\begin{itemize}
+
+\item Single value prediction.
+
+\item Predictive distribution.
+
+    \begin{itemize}
+
+    \item Summary stats.
+    \item Intervals.
+    \item $P(error > thresh)$
+    \item $E[cost(error)]$
+
+    \end{itemize}
+
+\end{itemize}
+\end{slide}
+
+
+\begin{slide}{}
+
+If you assume stationarity, life is good:
+
+\begin{itemize}
+
+\item Accumulate data indefinitely.
+
+\item Predictive distribution = observed distribution.
+
+\end{itemize}
+
+But this is often not a good assumption.
+
+\end{slide}
+
+
+
+
+\begin{slide}{}
+
+If the system is nonstationary:
+
+\begin{itemize}
+
+\item Fixed window?  Exponential decay?
+
+\item Too far: obsolete data.
+
+\item Not far enough: loss of useful info.
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+If you know where the changepoints are:
+
+\begin{itemize}
+
+\item Use data back to the latest changepoint.
+
+\item Less information immediately after.
+
+\end{itemize}
+
+\end{slide}
+
+
+
+\begin{slide}{}
+
+If you don't know, you have to guess.
+
+\[P(i) = \mbox{prob of a changepoint at time}\ i\]
+
+Example:
+
+\begin{itemize}
+
+\item 150 data points.
+
+\item $P(50) = 0.7$
+
+\item $P(100) = 0.5$
+
+\end{itemize}
+
+How do you generate a predictive distribution?
+
+
+\end{slide}
+
+\begin{slide}{}
+
+Two steps:
+
+\begin{itemize}
+
+\item Derive $P(i+)$: prob that $i$ is the {\red latest} changepoint.
+
+\item Compute weighted mix going back to each $i$.
+
+\end{itemize}
+
+Example:
+
+% \begin{itemize}
+
+% \item $P(50) = 0.7 \quad \quad P(100) = 0.5$
+
+% \item $P(50+) = 0.35 \quad P(100+) = 0.5$
+
+% \item Plus 0.15 chance of no changepoint.
+
+% \end{itemize}
+
+\begin{eqnarray*}
+& P(50) = 0.7 & P(100) = 0.5 \\
+P(\jc) = 0.15 & P(50+) = 0.35 & P(100+) = 0.5 \\
+\end{eqnarray*}
+
+\end{slide}
+
+\begin{slide}{}
+
+Predictive distribution = 
+
+\begin{eqnarray*}
+0.50  &\cdot & edf(100, 150) \oplus \\
+0.35  &\cdot & edf(50, 150) \oplus \\
+0.15 &\cdot & edf(0, 150) \\
+\end{eqnarray*}
+
+
+
+\end{slide}
+
+
+\begin{slide}{}
+
+So how do you generate the probabilities $P(i+)$?
+
+\vspace{0.1in}
+
+Three steps:
+
+\begin{itemize}
+
+\item Bayes' theorem.
+
+\item Simple case: you know there is 1 changepoint.
+
+\item General case: unknown \# of changepoints.
+
+\end{itemize}
+
+
+\end{slide}
+
+
+\begin{slide}{}
+
+Bayes' theorem (diachronic interpretation)
+
+\[ P(H|E) = \frac{P(E|H)}{P(E)} P(H) \]
+
+\begin{itemize}
+
+\item $H$ is a hypothesis, $E$ is a body of evidence.
+
+\item $P(H|E)$: posterior
+
+\item $P(H)$: prior
+
+\item $P(E|H)$ is usually easy to compute.
+
+\item $P(E)$ is often not.
+
+\end{itemize}
+
+
+\end{slide}
+
+
+\begin{slide}{}
+
+Unless you have a suite of exclusive hypotheses.
+
+\[ P(H_i|E) = \frac{P(E|H_i) P(H_i)}{P(E)} \]
+
+\[ P(E) = \sum_{H_j \in S} P(E|H_j) P(H_j) \]
+
+In that case life is good.
+
+\end{slide}
+
+
+\begin{slide}{}
+
+\begin{itemize}
+
+\item If you know there there is exactly one
+changepoint in an interval...
+
+\item ...then the $P(i)$ are exclusive hypotheses,
+
+\item and all you need is $P(E|i)$.
+
+\end{itemize}
+
+Which is pretty much a solved problem.
+
+\end{slide}
+
+
+\begin{slide}{}
+
+What if the \# of changepoints is unknown?
+
+\begin{itemize}
+
+\item $P(i)$ are no longer exclusive.
+
+\item But the $P(i+)$ are.
+
+\item And you can write a system of equations for $P(i+)$.
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+\[ P(i^+) = P(i^+ | \jc) \P(\jc) + \sum_{j<i} P(i^+ | j^{++}) \P(j^{++})  \]
+
+
+\begin{itemize}
+
+\item $P(j^{++})$ is the prob that the second-to last changepoint is at $i$.
+
+\item $P(i^+ | j^{++})$ reduces to the simple problem.
+
+\item $P(\jc)$ is the prob that we have not seen two changepoints.
+
+\item $P(i^+ | \jc)$ reduces to the simple problem (plus).
+
+\end{itemize}
+
+
+Great, so what's $P(j^{++})$?
+
+\end{slide}
+
+
+
+\begin{slide}{}
+
+\[ P(j^{++}) = \sum_{k>j} P(j^{++} | k^+) \P(k^+) \]
+
+\begin{itemize}
+
+\item $P(j^{++} | k^+)$ is just $P(j^+)$ computed at time $k$.
+
+\item So you can solve for $P(^+)$ in terms of $P(^{++})$.
+
+\item And $P(^{++})$ in terms of $P(^+)$.
+
+\item And at every iteration you have a pretty good estimate.
+
+\item Paging Dr. Jacobi!
+
+\end{itemize}
+
+
+
+\end{slide}
+
+
+
+\begin{slide}{}
+
+Implementation:
+
+\begin{itemize}
+
+\item Need to keep $n^2/2$ previous values.
+
+\item And $n^2/2$ summary statistics.
+
+\item And it takes $n^2$ work to do an update.
+
+\item But, you only have to go back two changepoints,
+
+\item ...so you can keep $n$ small.
+
+\end{itemize}
+
+
+\end{slide}
+
+
+\begin{slide}{}
+
+\raisebox{-2.8in}{
+\includegraphics[width=3.0in,height=3.1in]{../../python/change/example.eps}
+}
+\nolinebreak
+\begin{minipage}[t]{1.8in}
+
+\begin{itemize}
+
+\item Synthetic series with two changepoints.
+
+\item $\mu = -0.5, 0.5, 0.0$
+
+\item $\sigma = 1.0$
+
+\item $P(\jc) = 0.04$
+
+\end{itemize}
+
+\end{minipage}
+\end{slide}
+
+
+
+\begin{slide}{}
+
+\raisebox{-2.8in}{
+\includegraphics[width=3.0in,height=3.1in]{../../python/change/nile.eps}
+}
+\nolinebreak
+\begin{minipage}[t]{1.8in}
+
+\begin{itemize}
+
+\item The ubiquitous Nile dataset.
+
+\item Change in 1898.
+
+\item Estimated probs can be mercurial.
+
+\end{itemize}
+
+\end{minipage}
+\end{slide}
+
+
+\begin{slide}{}
+
+\raisebox{-2.8in}{
+\includegraphics[width=3.0in,height=3.1in]{../../python/change/var.eps}
+}
+\nolinebreak
+\begin{minipage}[t]{1.8in}
+
+\begin{itemize}
+
+\item Can also detect change in variance.
+
+\item $\mu = 1, 0, 0$
+
+\item $\sigma = 1, 1, 0.5$
+
+\item Estimated $P(i^+)$ is good.
+
+\item Estimated $P(i^{++})$ less certain.
+
+\end{itemize}
+
+\end{minipage}
+\end{slide}
+
+
+
+\begin{slide}{}
+
+\begin{itemize}
+
+\item Qualitative behavior seems good. 
+
+\item Quantitative tests:
+
+\begin{itemize}
+
+\item Compare to GLR for online alarm problem.
+
+\item {\gray Test predictive distribution with synthetic data.}
+
+\item {\gray Test predictive distribution with real data.}
+
+\end{itemize}
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+Changepoint problems:
+
+\begin{itemize}
+
+\item Detection: online alarm problem.
+
+\item {\gray Location: offline partitioning.}
+
+\item {\gray Tracking: online prediction.}
+
+\end{itemize}
+
+Proposed method does all three.  Starting simple...
+
+\end{slide}
+
+
+
+\begin{slide}{}
+
+Online alarm problem:
+
+\begin{itemize}
+
+\item Observe process in real time.
+
+\item $\mu_0$ and $\sigma$ known.
+
+\item $\tau$ and $\mu_1$ unknown.
+
+\item Raise alarm ASAP after changepoint.
+
+\item Minimize delay.
+
+\item Minimize false alarm rate.
+
+\end{itemize}
+
+
+\end{slide}
+
+
+
+\begin{slide}{}
+
+GLR = generalized likelihood ratio.
+
+\begin{itemize}
+
+\item Compute decision function $g_k$.
+
+\item $E[g_k] = 0$ before the changepoint,
+
+\item ... increases after.
+
+\item Alarm when $g_k > h$.
+
+\item GLR is optimal when $\mu_1$ is known.
+
+\end{itemize}
+
+
+\end{slide}
+
+
+
+\begin{slide}{}
+
+CPP = change point probability
+
+\[ P(changepoint) = \sum_{i=0}^{n} P(i^+) \]
+
+\begin{itemize}
+
+\item Alarm when $P(changepoint) > thresh$.
+
+\end{itemize}
+
+\end{slide}
+
+
+
+\begin{slide}{}
+
+\raisebox{-2.8in}{
+\includegraphics[width=3.0in,height=3.1in]{../../python/change/matfar.eps}
+}
+\nolinebreak
+\begin{minipage}[t]{1.8in}
+
+\begin{itemize}
+
+\item $\mu = 0, 1$
+
+\item $\sigma = 1$
+
+\item $\tau \sim \mbox{Exp}(0.01)$ 
+
+\item Goodness = lower mean delay for same false alarm rate.
+
+\end{itemize}
+
+\end{minipage}
+\end{slide}
+
+
+
+
+\begin{slide}{}
+
+\raisebox{-2.8in}{
+\includegraphics[width=3.0in,height=3.1in]{../../python/change/matsig.eps}
+}
+\nolinebreak
+\begin{minipage}[t]{1.8in}
+
+\begin{itemize}
+
+\item Fix false alarm rate = 5\%
+
+\item Vary $\sigma$.
+
+\item CPP does well with small $S/N$.
+
+\end{itemize}
+
+\end{minipage}
+\end{slide}
+
+
+\begin{slide}{}
+
+So it works on a simple problem.
+
+\vspace{0.1in}
+
+Future work:
+
+\begin{itemize}
+
+\item Other changepoint problems (location, tracking).
+
+\item Other data distributions (lognormal).
+
+\item Testing robustness (real data, trends).
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+Related problem:
+
+\begin{itemize}
+
+\item How much categorical data to use?
+
+\item Example: predict queue time based on size, queue, etc.
+
+\item Possible answer: narrowest category that
+yields two changepoints.
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+Good news:
+
+\begin{itemize}
+
+\item Very general framework.
+
+\item Seems to work.
+
+\item Many possible applications.
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+Bad news:
+
+\begin{itemize}
+
+\item Need to apply and test in real application.
+
+\item $n^2$ space and time may limit scope.
+
+\end{itemize}
+
+\end{slide}
+
+
+\begin{slide}{}
+
+\begin{itemize}
+
+\item More at {\tt allendowney.com/research/changepoint}
+
+\item Or email {\tt downey@allendowney.com}
+
+
+\end{itemize}
+
+
+\end{slide}
+
+
+\end{document}

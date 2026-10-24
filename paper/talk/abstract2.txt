@@ -1,0 +1,22 @@
+Changepoint detection for time series prediction
+Allen B. Downey
+Olin College of Engineering
+
+Most resource allocation is based on prediction, and most prediction
+is based on time-series data.  Many time series are characterized by
+periods of statistical stationarity punctuated by abrupt changes.  So
+identifying these changepoints is useful for prediction and
+allocation.
+
+I will present a Bayesian framework for estimating the probability of
+a changepoint in a time series, and demonstrate its use on several
+example problems.  I will also show how the framework can be applied
+to "online" changepoint detection, and compare it to GLR, a standard
+technique for this problem.
+
+This talk will include a general introduction to changepoint problems
+and Bayesian statistics.  This project is work in progress; I will
+present some of the problems I am currently dealing with, and I would
+be interested in talking to the audience about possible applications
+of these techniques.
+

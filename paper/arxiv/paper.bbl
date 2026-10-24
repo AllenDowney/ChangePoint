@@ -1,0 +1,89 @@
+\begin{thebibliography}{10}
+
+\bibitem{basseville93detection}
+M.~Basseville and I.~Nikiforov.
+\newblock {\em Detection of abrupt changes: theory and application}.
+\newblock Information and system science series. Prentice Hall, Englewood
+  Cliffs, NJ., 1993., 1993.
+
+\bibitem{bhattacharya94some}
+P.K. Bhattacharya.
+\newblock Some aspects of change-point analysis.
+\newblock 23:28--56, 1994.
+
+\bibitem{blazek01novel}
+Rudolf~B Bla\v{z}ek, Hongjoong Kim, Boris Rozovskii, and Alexander Tartakovsky.
+\newblock A novel approach to detection of denial-of-service attacks via
+  adaptive sequential and batch-sequential change-point detection methods.
+\newblock In {\em IEEE Systems, Man, and Cybernetics Information Assurance
+  Workshop}, 2001.
+
+\bibitem{chernoff64estimating}
+H.~Chernoff and S.~Zacks.
+\newblock Estimating the current mean of a normal distribution which is subject
+  to changes in time.
+\newblock {\em Annals of Mathematical Statistics}, pages 999--1018, 1964.
+
+\bibitem{cobb78problem}
+G.W. Cobb.
+\newblock The problem of the {Nile}: Conditional solution to a changepoint
+  problem.
+\newblock {\em Biometrika}, 65:243--252, 1978.
+
+\bibitem{deshpande04early}
+S.~Deshpande, M.~Thottan, and B.~Sikdar.
+\newblock Early detection of {BGP} instabilities resulting from {Internet} worm
+  attacks.
+\newblock In {\em IEEE Global Telecommunications Conference}, volume~4, pages
+  2266-- 2270, 2004.
+
+\bibitem{gelman03bayesian}
+Andrew Gelman, John~B. Carlin, Hal~S. Stern, and Donald~B. Rubin.
+\newblock {\em Bayesian Data Analysis, Second Edition}.
+\newblock {Chapman \& Hall/CRC}, July 2003.
+
+\bibitem{jandhyala02detection}
+V.~K. Jandhyala, S.~B. Fotopoulos, and D.~M. Hawkins.
+\newblock Detection and estimation of abrupt changes in the variability of a
+  process.
+\newblock {\em Comput. Stat. Data Anal.}, 40(1):1--19, 2002.
+
+\bibitem{karagiannis04nonstationary}
+Thomas Karagiannis, Mart Molle, Michalis Faloutsos, and Andre Broido.
+\newblock A nonstationary {Poisson} view of {Internet} traffic.
+\newblock In {\em INFOCOM}, volume~3, pages 1558--1569, 2004.
+
+\bibitem{kifer04detecting}
+Daniel Kifer, Shai Ben-David, and Johannes Gehrke.
+\newblock Detecting change in data streams.
+\newblock In {\em Proceedings of the 30th International Conference on Very
+  Large Data Bases}, 2004.
+
+\bibitem{noureddine02transmission}
+Wael Noureddine and Fouad Tobagi.
+\newblock The {Transmission Control Protocol}.
+\newblock Technical report, Stanford University, July 2002.
+
+\bibitem{paxson94empirically}
+Vern Paxson.
+\newblock Empirically derived analytic models of wide-area {TCP} connections.
+\newblock {\em IEEE/ACM Transactions on Networks}, 2(4):316--336, 1994.
+
+\bibitem{vellekoop06nonlinear}
+M.~H. Vellekoop and J.~M.~C. Clark.
+\newblock A nonlinear filtering approach to changepoint detection problems:
+  Direct and differential-geometric methods.
+\newblock {\em SIAM Review}, 48(2):329--356, 2006.
+
+\bibitem{wolski99network}
+Rich Wolski, Neil~T. Spring, and Jim Hayes.
+\newblock The {Network Weather Service}: a distributed resource performance
+  forecasting service for metacomputing.
+\newblock {\em Future Generation Computer Systems}, 15(5--6):757--768, 1999.
+
+\bibitem{zhang01constancy}
+Y.~Zhang, Nick Duffield, Vern Paxson, and Scott Shenker.
+\newblock On the constancy of {Internet} path properties.
+\newblock In {\em ACM SIGCOMM}, 2001.
+
+\end{thebibliography}

@@ -1,0 +1,340 @@
+\documentclass[twocolumn,11pt]{article}
+
+\usepackage{epsfig,url}
+
+\renewcommand{\topfraction}{1.0}
+\setlength{\oddsidemargin}{4pc}
+\setlength{\evensidemargin}{4pc}
+\advance\oddsidemargin by -1in  % Correct for LaTeX gratuitousness
+\advance\evensidemargin by -1in % Correct for LaTeX gratuitousness
+
+\topmargin 4.5pc                % Nominal distance from top of page to top of
+                                % box containing running head.
+\advance\topmargin by -1.5in      % Correct for LaTeX gratuitousness
+
+\textheight 666pt       % 9 1/4 column height
+\textwidth 43pc         % Width of text line.
+                        % For two-column mode:
+\columnsep 2pc          %    Space between columns
+\hfuzz 2pt           % Allow some variation in column width; otherwise it's
+                     % too hard to typeset in narrow columns.
+
+
+ 
+\begin{document}
+
+\title{Changepoint detection in network measurements}
+
+\author{Allen B. Downey}
+
+\maketitle
+
+\begin{abstract}
+
+I have developed a framework for identifying candidate
+changepoints in a time series and estimating the probability
+that each candidate is a true changepoint.  This framework is
+useful for a variety of applications in network measurement and
+prediction.  I am seeking support for ongoing work I am planning
+for Summer 2006.
+
+\end{abstract}
+
+\section{Introduction}
+\label {intro}
+
+Predicting network round trip times is useful for a variety of
+applications.  At the protocol level, these predictions are used to
+estimate parameters like timeouts and network capacity
+\cite{noureddine02transmission}.  In middleware, they are used for
+resource selection and scheduling \cite{wolski99network} And at the
+application level, they are used for predicting transfer times and
+choosing among mirror sites.
+
+Most practical models of network performance are stationary, but
+measurements in the current Internet show that network performance
+is characterized by periods of stationarity punctuated with
+abrupt transitions.  On short time scales, these transitions are
+caused by variations in traffic.  On medium time scales, they are
+caused by routing changes and transient hardware changes (e.g. routers
+and links going down and coming back up).  On longer time scales they
+are caused by hardware changes like upgrades and new
+hardware.
+
+I believe that detection of abrupt changes in time series
+data is an important problem for network measurement and modeling.
+
+Statisticians have done extensive work on the general problem of
+changepoint detection, but this work has not yet crossed over into
+computer science.  The two goals of my project are to develop a novel
+technique for the general problem of changepoint detection and to
+pioneer the application of these techniques to applications in
+computer science.
+
+
+\subsection{Changepoint detection}
+
+Two general approaches to changepoint detection are online and
+offline.  Online techniques are incremental; they deal with incoming
+data as it arrives; offline techniques can only run after all data are
+available.  This distinction is partly misleading, though, since it is
+possible to run an ``offline'' algorithm every time a new point
+arrives.  But offline algorithms are often too
+computationally-intensive to be practical for real-time processing.
+Also, the goal of offline processing is usually to identify every
+changepoint in a sequence; most online algorithms are only interested
+in the last changepoint.
+
+The focus of my project is real-time predictions, so I am most
+interested in online algorithms.  The technique I will propose
+is efficient in the sense that when a new data point arrives, it
+requires space and time proportional to $n^2$, where $n$ is the
+(estimated) number of data points since the last changepoint.
+
+As for most problems in statistics, there are both Bayesian and
+frequentist approaches to changepoint detection.  My approach is
+Bayesian in the sense that it is focused on computing probabilities
+and distributions rather than estimating parameters or testing
+hypotheses.
+
+
+\subsection{Prediction with changepoints}
+
+The ultimate goal of this project is to use time series data to make
+predictions.  For example, imagine that we have observed $n$ values
+$x_0, x_1, ... x_{n-1}$, and we want to predict the value of $x_n$.
+
+In the simplest case, we might model the series as a random variable
+$X$ with a stationary distribution (and, possibly, autocorrelation
+structure).  We could use the observed values to estimate the
+parameters of $X$ and then use those parameters to predict the next
+value or, more generally, the distribution of the next value.
+
+If we know that the process is non-stationary with abrupt changepoints,
+then we would not want to use all of the observed data to generate
+the prediction.  For example, if we know that there is a changepoint
+at time $i$, then data from before that time should be ignored.
+
+In general, we don't know when changepoints occur, so we have to
+infer them from the time series itself.  In that case we usually
+don't know with certainty whether a changepoint happened at a given
+time, but we might be able to compute a probability.
+
+At this point, there are two choices.  The simpler one is to apply
+a threshold to the computed probabilities.  If a changepoint is
+sufficiently likely, we assume that it occurred and discard older
+data.  Otherwise we assume that there was no changepoint.  The other
+choice is to use the changepoint probabilities to generate
+predictions.  For example, if we think that there is a 75\% chance
+of a changepoint at $i$, the we could generate two predictions,
+one that assumes that there was a changepoint, and one that assumes
+that there wasn't, and then combine the predictions using the
+computed probability as a weight.  My technique uses the latter
+approach.
+
+Therefore, the proximate goal of this project is to compute
+$p(i^+)$, which I define as the probability that $i$ is the index
+of the last (most recent) changepoint.  The superscript $+$ is intended
+to distinguish from $p(i)$, which is the probability that $i$
+is the index of a changepoint (but not necessarily the last).
+
+\section{The algorithm}
+
+Before I can present my algorithm it will be useful to discuss a
+simplified problem.
+
+\subsection{The simple version}
+
+Imagine, as in the previous section, that
+we have observed a series of $n$ values.  In addition, assume:
+
+\begin{enumerate}
+
+\item We have a model of the process that allows us to compute
+the likelihood of a given series. 
+
+\item A changepoint is equally likely (a priori) to occur at any time.
+
+\item We know that exactly one changepoint occurred during the
+observed interval.
+
+\end{enumerate}
+%
+The first is a reasonable assumption for many applications;
+the second is more restrictive, but still reasonable;
+the third is not usually true at all, but we will soon be able to
+eliminate it.
+
+The nice thing about the third assumption is that it allows
+us to formulate a series of hypotheses, $i^+$, that are mutually
+exclusive.  Since we know that there is only one changepoint, we
+know that exactly one value of $i$ can be the index of the
+first changepoint.
+
+It is, therefore, possible to convert the computed likelihoods
+(from the first assumption) into probabilities just by dividing
+through by the total likelihood.
+
+
+\subsection{The complicated version}
+
+Usually we don't know how many changepoints occurred, so the
+general form of the problem is more complicated.  The kernel
+of my algorithm is the following system of equations:
+
+\newcommand{\p}{\ p}
+
+\begin{eqnarray*}
+p(i^+) &=& \sum_{j<i} p(i^+ | j^{++}) \p(j^{++}) + p(i^+ | jc) \p(jc)   \\
+p(i^{++}) &=& \sum_{k>i} p(i^{++} | k^+) \p(k^+) \\
+\end{eqnarray*}
+%
+with the following definitions:
+
+\begin{itemize}
+
+\item $i^+$ is the hypothesis that $i$ is the index of the last
+(most recent) changepoint, and $p(i^+)$ is its probability.
+
+\item $i^{++}$ is the hypothesis that $i$ is the
+second-to-last changepoint.
+
+\item $jc$ is the hypothesis that there are fewer than two
+changepoints during the observed interval.  The probability
+of $jc$ is the complement of the sum of $p(j^{++})$.
+
+\item $p(i^+ | j^{++})$ is the probability that $i$ is the last
+changepoint, given that $j$ is the second-to-last.  Computing this
+probability reduces to the simplified problem described in the
+previous section because if $j$ is the second-to-last changepoint,
+we know that there is exactly one changepoint between $j$ and $n$.
+
+\item $p(i^+ | jc)$ is the probability that $i$ is the last
+changepoint, given there are fewer than two changepoints in the
+interval.  This reduces to the simplified problem described in the
+previous section, extended slightly to deal with the
+possibility that there are no changepoints.
+
+\item $p(i^{++} | k^+)$ is the probability that $i$ is the
+second-to-last changepoint given that $k$ is the last.  If $k$ is a
+changepoint, then all data after time $k$ is irrelevant, so $p(i^{++}
+| k^+) = p_k(i^+)$, where $p_k$ indicates the probability that was
+computed at time $k$.  If we store previous results, we don't
+have to compute this value; we can just look it up.
+
+\end{itemize}
+
+At each time step, we have to recompute $p(i^+ | j^{++})$ and $p(i^+ |
+jc)$.  Then we could solve the system of equations for $p(i^+)$ and
+$p(i^{++})$, but since the result from the previous time step is
+likely to be a good starting approximation, it is sufficient (and more
+efficient) to perform one iteration of Jacobi's method per time step.
+
+
+\section{Results}
+
+I have tested an implementation of this algorithm on synthetic data.
+Figure 1 shows a time series sampled from a normal distribution with
+$\sigma = 1$ and a breakpoint at $i=50$.  Before the breakpoint, the
+mean is 0.0; after the breakpoint it is 0.7.  I chose these values to
+generate a breakpoint that is detectable but subtle enough that its
+computed probability is less than 1.
+
+\begin{figure}[tb]
+\centerline{\epsfig{figure=series.eps,width=3.2in}}
+\caption{A synthetic time series with computed probabilities $p(i^+)$.}
+\label{fig.model}
+\end{figure}
+
+The gray dotted line shows the time series data.  The solid black line
+shows the computed values of $p(i^+)$ accumulated from right to left.
+At $i=60$, the cumulative probability is 0.04, indicating only a 4\%
+chance that there is a breakpoint after $i=60$.  At $i=40$, the
+cumulative probability is 0.65, so the algorithm indicates that there
+is a 61\% chance of a breakpoint in the interval $40 < i < 60$.  This
+conclusion is consistent with what a human might estimate looking
+at the same data.
+
+
+
+\section{Significance}
+
+This project represents a new direction for me.  In my prior work I
+have applied statistical techniques to problems in network measurement
+and modeling.  This is the first project of mine that I think is a
+novel contribution in statistics.  In particular, it is the first
+project where I have had a chance to apply my interest in (and slowly
+accumulating knowledge of) Bayesian statistics.  As a way of getting
+access to researchers and venues in statistics, I am hoping to
+collaborate with a statistician, possibly Emmanuel Yashchin at IBM
+Research, who has done work that is closest to what I am proposing
+\cite{yashchin95estimating}.
+
+If successful, my algorithm is likely to be useful for a variety of
+applications in prediction and scheduling.  This project was motivated
+by my collaboration with Rich Wolski and John Brevik at UC Santa
+Barbara.  Their research group is active in developing middleware for
+Grid computing environments; my work is of interest to them for
+several projects.
+
+I hope that within the next year this project will generate two
+publications: one that presents and evaluates the algorithm, targeted
+for {\em Annals of Mathematics Statistics} or a similar venue; the
+other that applies the algorithm to a problem in network measurement,
+targeted for ACM Sigmetrics, a computer science conference.
+
+
+\section{Timeline}
+
+I have implemented the algorithm and started testing on synthetic data
+sets.  In the next few months, I will hand over my prototype to my
+collaborators at UCSB so that they can integrate it into the Network
+Weather Service, a system that monitors a wide-area network and makes
+predictions based on a variety of statistical techniques
+\cite{wolski99network}.  This infrastructure will make it possible to
+test the performance of my algorithm in direct comparison with other
+techniques.
+
+This will be my primary research project this summer.  I hope to
+have at least one paper ready for submission by October, which will
+be the deadline for Sigmetrics 2007.
+
+My ability to prepare an additional paper for a statistics venue
+depends on whether I can recruit a collaborator with more background
+in this area.
+
+
+\section{Educational Benefits}
+
+So far I have not been able to get students to work with me on this
+project.  Few students have enough background in statistics to work in
+this area or enough interest to develop the background on their own.
+However, this project might generate ``spin-off'' projects that
+students could work on.
+
+My work in this area contributes to my classes in a much more direct
+way.  I use examples from my work in both Software Systems and
+Computational Modeling; in both classes students read papers that are
+relevant to my research and do exercises where they work with data I
+have collected or analyzed.  For example, in Software Systems, we
+model the distribution of process lifetimes and discuss its effect
+on distributed scheduling, using data from one of my papers.
+
+My interest in Bayesian statistics has
+already led to a module in Computational Modeling; at some point I
+might be interested in teaching a class on the topic.
+
+This work will be done primarily on campus, so I will have the
+opportunity to talk to faculty and students about it, possibly including
+a public presentation.  I spent most of Winter Break in Santa Barbara
+working on this project with my colleagues there; I may travel to
+visit them this summer, and I am hoping that they will visit me here,
+in which case I would ask them to present their work at an
+Olin Seminar.
+
+
+\bibliographystyle{plain}
+\bibliography{paper}
+
+\end{document}
+

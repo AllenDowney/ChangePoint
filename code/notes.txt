@@ -1,0 +1,301 @@
+Calibrate GLR by choosing a threshold so that the mean time
+between false alarms is about 100.
+
+In GLR.py, the function mtbfa sweeps a range of thresholds
+and prints
+
+    thresh	mtbfa
+0.5		4.25
+1.0		9.28
+1.5		18.16
+2.0		36.71
+2.5		58.88
+3.0		82.74
+3.5		142.58
+4.0		210.02
+4.5		360.54
+
+
+The function tbfa does 1000 iterations to get a more accurate
+picture of a smaller range:
+
+3.1	97.04
+3.15	101.94     
+3.2	108.38
+3.25	109.73
+
+
+Or, even better, here are results for 1000 runs with sigma=1.0
+
+thresh          fa %    mean alarm time
+3.0     1.0     0.412   6.37074829932
+3.3     1.0     0.323   6.86410635155
+3.6     1.0     0.246   7.51856763926
+3.9     1.0     0.197   8.05728518057
+4.2     1.0     0.146   8.5644028103
+4.5     1.0     0.117   9.2208380521
+4.8     1.0     0.088   9.67324561404
+5.1     1.0     0.067   10.2336548767
+5.4     1.0     0.051   10.7850368809
+5.7     1.0     0.039   11.3319458897
+6.0     1.0     0.028   11.9032921811
+6.3     1.0     0.02    12.5214285714
+6.6     1.0     0.016   13.0660569106
+6.9     1.0     0.013   13.6919959473
+7.2     1.0     0.009   14.2926337033
+
+
+The distribution is exponential.
+
+nu_min is 0.1, which is on the order of the error in the
+estimate of the mean (sigma / sqrt(N)) where sigma = 1.0
+and N = 100.
+
+Sensitivity to nu_min is small.  With thresh=3.15
+
+numin	    mtbfa
+
+0.01	    101.44
+0.025	    101.53
+0.05	    101.61	
+0.1	    101.94
+0.2	    103.10
+0.4	    106.14
+1.0	    124.85
+
+
+Now setting thresh=4, numin=0.1, plot alarm time and false alarm
+rate against sigma (test_alarm_times):
+
+sig  fa rate  avg alarm time
+
+0.25 0.168 1.42668269231
+0.5 0.17 3.1
+1.0 0.172 8.16425120773
+1.5 0.172 15.6026570048
+2.0 0.172 27.2282608696
+2.5 0.172 41.0507246377
+3.0 0.172 56.1086956522
+
+
+
+
+For i++, we want to find the threshold on p(i++) that yields
+a false alarm rate of about 17% after 50 samples.
+
+After 100 runs
+
+thresh	  
+0.4	38
+0.5	23
+0.6	16
+0.7	11
+0.8	4
+0.9	1
+
+So a threshold near 0.6 looks pretty good.
+
+With 500 runs:
+
+thresh  % false alarm
+0.4     0.436
+0.5     0.292
+0.6     0.172
+0.7     0.114
+0.8     0.062
+0.9     0.022
+
+
+And now we can start computing alarm times:
+
+With 50 runs:
+
+thresh          fa %    mean alarm time
+0.6     1.0     0.22    8.48717948718
+0.65    1.0     0.2     8.775
+0.7     1.0     0.1     9.64444444444
+0.75    1.0     0.08    11.1956521739
+0.8     1.0     0.06    12.0
+0.85    1.0     0.04    14.125
+0.9     1.0     0.04    16.5208333333
+
+
+With 100 runs
+
+thresh
+0.55    1.0     0.27    8.0
+0.6     1.0     0.25    8.53333333333
+0.625   1.0     0.24    8.64473684211
+0.65    1.0     0.2     8.625
+0.675   1.0     0.16    8.96428571429
+0.7     1.0     0.14    9.24418604651
+0.75    1.0     0.11    10.7752808989
+0.8     1.0     0.08    11.847826087
+0.85    1.0     0.06    13.5
+0.9     0.99    0.03    14.7604166667
+
+
+With 100 runs
+
+thresh
+0.5     1.0     0.26    7.5
+0.52    1.0     0.24    7.59210526316
+0.54    1.0     0.24    7.77631578947
+0.56    1.0     0.23    8.06493506494
+0.58    1.0     0.2     8.1375
+0.6     1.0     0.19    8.33333333333
+0.62    1.0     0.19    8.55555555556
+0.64    1.0     0.15    8.54117647059
+0.66    1.0     0.13    8.57471264368
+0.68    1.0     0.12    8.93181818182
+0.7     1.0     0.12    9.23863636364
+0.72    1.0     0.09    9.41758241758
+0.74    1.0     0.08    10.1413043478
+0.76    1.0     0.07    10.6129032258
+0.78    1.0     0.07    11.4408602151
+0.8     1.0     0.05    11.8736842105
+0.82    1.0     0.05    12.3263157895
+0.84    1.0     0.04    12.8229166667
+0.86    1.0     0.03    13.0
+0.88    1.0     0.02    14.193877551
+0.9     0.99    0.02    14.4845360825
+
+
+Best comparison between methods is to plot mean alarm time (mat)
+versus false alarm rate.
+
+Run GLR
+
+python Change4.py --alg=glr > result.glr
+awk '{print $3,$4}' < result.glr > mat_vs_far.glr
+
+Run a new GLR and look for differences
+
+python Change4.py --alg=glr > result.glr1
+awk '{print $3,$4}' < result.glr1 > mat_vs_far.glr1
+xgraph mat_vs_far.glr mat_vs_far.glr1
+
+
+Run CPP with mu and sigma unknown
+
+python Change4.py --alg=ipp > result.ipp
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < resxgraph mat_vs_far.glr mat_vs_far.ipp mat_vs_far.ipp1 mat_vs_far.ipp2
+
+
+Run a variation of CPP with mu0=0 and sigma=1.0 known, and compare
+
+python Change4.py --alg=ipp -m -s --runs=1000 > result.ipp21
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp21 > mat_vs_far.ipp21
+xgraph mat_vs_far.glr1 mat_vs_far.ipp21 
+
+python Change4.py --alg=ipp -m -s --runs=1000 > result.ipp22
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp22 > mat_vs_far.ipp22
+xgraph mat_vs_far.glr1 mat_vs_far.ipp21 mat_vs_far.ipp22 
+
+python Change4.py --alg=ipp -m -s --runs=1000 --fudge=0.7 > result.ipp2a
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp2a > mat_vs_far.ipp2a
+python Change4.py --alg=ipp -m -s --runs=1000 --fudge=0.5 > result.ipp2b
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp2b > mat_vs_far.ipp2b
+xgraph mat_vs_far.glr1 mat_vs_far.ipp2a mat_vs_far.ipp2b 
+
+
+
+
+Test run:
+
+python Change4.py > result.test
+awk '$2>=0.99 {print $3,$4}' < result.test > mat_vs_far.test
+xgraph mat_vs_far.glr mat_vs_far.ipp2 mat_vs_far.test
+
+
+Running the whole dataset:
+
+python Change4.py --alg=glr0 > result.glr0
+awk '{print $3,$4}' < result.glr0 > mat_vs_far.glr0
+
+python Change4.py --alg=glr --numin=0.0 > result.glr1
+awk '{print $3,$4}' < result.glr1 > mat_vs_far.glr1
+
+python Change4.py --alg=glr > result.glr
+awk '{print $3,$4}' < result.glr > mat_vs_far.glr
+
+xgraph mat_vs_far.glr0 mat_vs_far.glr1 mat_vs_far.glr
+
+
+
+
+Comparing unknown mu, sigma; known sigma; known mu; known mu, sigma:
+
+python Change4.py --alg=ipp --runs=100 > result.ipp
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp > mat_vs_far.ipp
+
+python Change4.py --alg=ipp --runs=100  -s > result.ipp.s
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp.s > mat_vs_far.ipp.s
+
+python Change4.py --alg=ipp --runs=100  -m > result.ipp.m
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp.m > mat_vs_far.ipp.m
+
+python Change4.py --alg=ipp --runs=100  -m --iters=2 > result.ipp.m2
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp.m2 > mat_vs_far.ipp.m2
+
+xgraph mat_vs_far.glr mat_vs_far.ipp.m mat_vs_far.ipp.m2
+
+python Change4.py --alg=ipp --runs=100  -m -s > result.ipp.ms
+awk '$3<0.30 && $4 != "inf" {print $3,$4}' < result.ipp.ms > mat_vs_far.ipp.ms
+
+xgraph mat_vs_far.glr mat_vs_far.ipp mat_vs_far.ipp.s mat_vs_far.ipp.m mat_vs_far.ipp.ms
+
+
+
+
+To run mat vs. sigma:
+
+
+python Change4.py --alg=glr --matsig --runs=100 > matsig.glr
+
+python Change4.py --alg=ipp -m -s --fudge=0.5 --matsig --runs=20 > matsig.ipp2
+
+grep fa matsig.glr | awk '$2==0.05 {print $3, $4}' > matsig.5.glr
+grep fa matsig.glr | awk '$2==0.10 {print $3, $4}' > matsig.10.glr
+xgraph matsig.5.glr matsig.10.glr
+
+grep fa matsig.ipp2 | awk '$2==0.05 {print $3, $4}' > matsig.5.ipp2
+grep fa matsig.ipp2 | awk '$2==0.10 {print $3, $4}' > matsig.10.ipp2
+xgraph matsig.5.ipp2 matsig.10.ipp2
+
+
+xgraph matsig.5.glr matsig.5.ipp2
+xgraph matsig.10.glr matsig.10.ipp2 
+
+
+python Change4.py --alg=glr --matsig --runs=1000 > matsig.glr
+grep fa matsig.glr | awk '$2==0.05 {print $3, $4}' > matsig.5.glr
+grep fa matsig.glr | awk '$2==0.10 {print $3, $4}' > matsig.10.glr
+
+python Change4.py --alg=ipp -m -s --fudge=0.5 --matsig --runs=1000 > matsig.ipp2a
+grep fa matsig.ipp2a | awk '$2==0.05 {print $3, $4}' > matsig.5.ipp2a
+grep fa matsig.ipp2a | awk '$2==0.10 {print $3, $4}' > matsig.10.ipp2a
+
+xgraph matsig.5.glr matsig.5.ipp2 matsig.5.ipp2a
+xgraph matsig.10.glr matsig.10.ipp2 matsig.10.ipp2a
+
+
+
+Regression testing:
+
+python Change3.py --alg=ipp --test &> change3.test
+python Change4.py --alg=ipp --test &> change4.test
+head change3.test change4.test
+
+
+To generate the change in variance data:
+
+python Change4.py --alg=ipp --var -d --rseed=6
+
+
+
+python Change4.py --alg=ipp --trial --rseed=10 --simple > temp
+awk '$1=="like1" {print $2, $3}' < temp > like1
+awk '$1=="like2" {print $2, $3}' < temp > like2
+awk '$1=="sum" {print $2, $3}' < temp > sum
+xgraph like1 like2 sum
